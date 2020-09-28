@@ -6,7 +6,7 @@
 ## 二、本周完成的内容
 1. 浏览/学习了梁老师在数据挖掘课上使用的课件。
 2. 了解并使用了一些数据挖掘中常用的python Module（numpy、pandas、matplotlib等）
-3. 提交了一次天池学习赛（第一次手滑误把sample_submit.csv提交上去了）：
+3. 学习了部分比赛提供的资料病提交了一次天池学习赛（第一次手滑误把sample_submit.csv提交上去了）：
 ![Img1](./images/week1_1.png)
 
 ## 三、下周计划

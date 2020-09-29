@@ -79,20 +79,31 @@ data = pd.get_dummies(data, columns=['grade', 'subGrade', 'homeOwnership', 'veri
 
 # 高维类别特征需要进行转换
 for f in ['employmentTitle', 'postCode', 'title']:
+    # 这个操作的目的是将数据按照${f}进行分组（因为将train表和testA表合并了）
+    # 然后统计每组的个数（count），并且新增一列'f_cnts'的属性，其值为相应的count
+    # tips：此操作并未将该列属性增加到csv表格中，如果需要则应使用set_index()
     data[f+'_cnts'] = data.groupby([f])['id'].transform('count')
+
+    # 增加一组属性：对属性${f}进行降序（ascending = False）排，
+    # 并且使用astype()将其数值强制转化成int
     data[f+'_rank'] = data.groupby([f])['id'].rank(ascending=False).astype(int)
+    
+    # 删除${f}这列属性
     del data[f]
 
+# 将除了id、issueDate、isDefault外的所有属性作为Features进行训练
 features = [f for f in data.columns if f not in ['id','issueDate','isDefault']]
 
+# 训练组为属性isDefault有明确值的数据，测试组则与之相反
 train = data[data.isDefault.notnull()].reset_index(drop=True)
 test = data[data.isDefault.isnull()].reset_index(drop=True)
 
 x_train = train[features]
 x_test = test[features]
-
 y_train = train['isDefault']
 
+
+# 构建一个函数能够直接调用「三种树模型」
 def cv_model(clf, train_x, train_y, test_x, clf_name):
     folds = 5
     seed = 2020
@@ -205,5 +216,5 @@ cat_train, cat_test = cat_model(x_train, y_train, x_test)
 
 rh_test = lgb_test*0.5 + xgb_test*0.5
 testA['isDefault'] = rh_test
-testA[['id','isDefault']].to_csv('test_sub.csv', index=False)
+testA[['id','isDefault']].to_csv('output.csv', index=False)
 

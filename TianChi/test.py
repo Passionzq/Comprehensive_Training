@@ -103,6 +103,7 @@ x_test = test[features]
 y_train = train['isDefault']
 
 
+# --------------------------建立训练器-------------------------
 # 构建一个函数能够直接调用「三种树模型」
 def cv_model(clf, train_x, train_y, test_x, clf_name):
     folds = 5   

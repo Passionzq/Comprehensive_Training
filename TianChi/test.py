@@ -21,7 +21,7 @@ train = pd.read_csv('train.csv')
 testA = pd.read_csv('testA.csv')
 
 # 调用read_csv()读取文件时时会自动识别表头（默认读取第一行，即header=0)，数据有表头时不能设置header为空；
-train.header()
+train.head()
 
 # --------------------------数据预处理--------------------------
 # 将testA拼接到train的末端
@@ -105,35 +105,51 @@ y_train = train['isDefault']
 
 # 构建一个函数能够直接调用「三种树模型」
 def cv_model(clf, train_x, train_y, test_x, clf_name):
-    folds = 5
-    seed = 2020
+    folds = 5   
+    seed = 2020 
+    # KFold函数的作用：对数据进行交叉验证。
+    # 原理是将数据分为"n_splits"组，每组数据都要作为一次验证集进行一次验证，而其余的"n_splits"组数据作为训练集。
+    # 则一共要循环、验证"n_splits"次，得到"n_splits"个模型，将这些模型得到的误差计算均值，得到交叉验证误差。
+    # n_splits： 将训练集分为n份数据
+    # shuffle： 是否打乱数据的顺序，只有当其为true时random_state才能发挥其作用。
+    # random_state:在需要设置随机数种子的地方都设置好，从而保证程序每次运行都分割一样的训练集和测试集。
+    # 进而每次运行代码时都能得到同样的结果，否则，同样的算法模型在不同的训练集和测试集上的效果不一样。
     kf = KFold(n_splits=folds, shuffle=True, random_state=seed)
 
+    # shape[0]返回的是相应的行数，shape[1]则是返回列数
+    # zeros函数的作用：返回一个给定维数的向量
+    # 输入一个数字n，则返回1*n的向量；若输入一个元组(n,m)则返回n*m的向量
     train = np.zeros(train_x.shape[0])
     test = np.zeros(test_x.shape[0])
 
     cv_scores = []
 
+    # split函数的作用：返回样本切分之后数据集的indices（索引）
     for i, (train_index, valid_index) in enumerate(kf.split(train_x, train_y)):
         print('************************************ {} ************************************'.format(str(i+1)))
+        # iloc函数的作用：通过行号（也即前面的索引）来取行数据
+        # trn_x是交叉验证中的测试集的[feature]，trn_y是交叉验证中测试集的['isDefault']；val_则是测试集
         trn_x, trn_y, val_x, val_y = train_x.iloc[train_index], train_y[train_index], train_x.iloc[valid_index], train_y[valid_index]
 
+        # LightGBM算法：使用GOSS算法和EFB算法的梯度提升树（GBDT）称之为LightGBM
         if clf_name == "lgb":
+
+            # 保存 Dataset 到 LightGBM 二进制文件将会使得加载更快速:
             train_matrix = clf.Dataset(trn_x, label=trn_y)
             valid_matrix = clf.Dataset(val_x, label=val_y)
 
             params = {
-                'boosting_type': 'gbdt',
-                'objective': 'binary',
-                'metric': 'auc',
-                'min_child_weight': 5,
-                'num_leaves': 2 ** 5,
-                'lambda_l2': 10,
-                'feature_fraction': 0.8,
-                'bagging_fraction': 0.8,
-                'bagging_freq': 4,
-                'learning_rate': 0.1,
-                'seed': 2020,
+                'boosting_type': 'gbdt', # 设置提升类型
+                'objective': 'binary',  # 逻辑回归二分类，输出概率
+                'metric': 'auc',    # 度量指标AUC：Area Under the Curve 
+                'min_child_weight': 5,  #使一个结点分裂的最小海森值之和，较高的值可能会减少过度拟合
+                'num_leaves': 2 ** 5,   # 树的最大叶子节点数
+                'lambda_l2': 10,    # 越小l2正则程度越高 
+                'feature_fraction': 0.8, # 建树时随机抽取特征的比例，默认为1
+                'bagging_fraction': 0.8, # 建树时样本采样比例，默认为1
+                'bagging_freq': 4,  #bagging的频率
+                'learning_rate': 0.1, #学习率
+                'seed': 2020,   #随机数种子
                 'nthread': 28,
                 'n_jobs':24,
                 'silent': True,
@@ -212,7 +228,7 @@ lgb_train, lgb_test = lgb_model(x_train, y_train, x_test)
 
 xgb_train, xgb_test = xgb_model(x_train, y_train, x_test) 
 
-cat_train, cat_test = cat_model(x_train, y_train, x_test)
+# cat_train, cat_test = cat_model(x_train, y_train, x_test)
 
 rh_test = lgb_test*0.5 + xgb_test*0.5
 testA['isDefault'] = rh_test

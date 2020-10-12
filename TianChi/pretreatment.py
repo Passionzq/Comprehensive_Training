@@ -43,19 +43,37 @@ testA = pd.read_csv('testA.csv')
 # 【earliesCreditLine】直接扔进去训练
 # 【title】直接扔进去训练
 # 【policyCode】全是1、无意义，舍弃
-# 【n1】将NAN值分配到加权平均数3，将大于15的数随机分配到16-21
+# 【n1】将NAN值分配到加权平均数3
+# 【n2】将NAN值分配到加权平均数6
+# 【n3】将NAN值分配到加权平均数6
+# 【n3】将NAN值分配到加权平均数5
+# 【n4】将NAN值分配到加权平均数5
+# 【n5】将NAN值分配到加权平均数8
+# 【n6】将NAN值分配到加权平均数9
+# 【n7】将NAN值分配到加权平均数8
+# 【n8】将NAN值分配到加权平均数15
+# 【n9】将NAN值分配到加权平均数6
+# 【n10】将NAN值分配到加权平均数12
+# 【n11】0占91.2%，NAN占8.7%，1~4占0.2%
+# 【n12】0占94.66%,NAN占5%,1-4占0.34%
+# 【n13】0占89.5%，1占4%，NAN占5%，1-39占1.5%
 
+#显示所有列
+pd.set_option('display.max_columns', None)
+#显示所有行
+pd.set_option('display.max_rows', None)
 
-def n1_func(x):
+def n13_func(x):
     if pd.isnull(x):
-        return 3
-    elif x > 15:
-        return 15+np.random.randint(low = 1, high = 6, dtype = np.int64)
+        return 0
+    elif x > 1:
+        return 12 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
     else:
         return x
-train['n1'] = train['n1'].apply(n1_func)
-print(train['n1'].value_counts(dropna=False, normalize = False).sort_index())
-train['n1'].plot(kind='hist', bins = 21)#, edgecolor="black")
+train['n13'] = train['n13'].apply(n13_func)
+
+print(train['n14'].value_counts(dropna=False, normalize = False).sort_index())
+train['n14'].plot(kind='hist', bins = 16)#, edgecolor="black")
 plt.show()
 
 
@@ -98,6 +116,7 @@ plt.show()
 # def issueDate_func(x):
 #     return np.int64(x.split('-')[0])
 
+
 # train['issueDate'] = train['issueDate'].apply(issueDate_func) + train['employmentLength']
 
 
@@ -134,11 +153,159 @@ plt.show()
 #         return x        
 # train['delinquency_2years'] = train['delinquency_2years'].apply(delinquency_func)
 
+
 #【pubRec】
 # train['pubRec'] = train['pubRec'].apply(lambda x: 2 if x>2 else x)
+
 
 #【revolUtil】
 # train['revolUtil'] = train['revolUtil'].apply(lambda x: 105 + 0.1 * np.random.randint(low = 0, high = 51, dtype = np.int64) if (x>105 or pd.isnull(x)) else x)
 
+
 #【totalAcc】
 # train['totalAcc'] = train['totalAcc'].apply(lambda x: 75 +np.random.randint(low = 0, high = 11, dtype = np.int64) if x>75 else x)
+
+
+#【n1】
+# def n1_func(x):
+#     if pd.isnull(x):
+#         return 3
+#     elif x > 15:
+#         return 16 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n1'] = train['n1'].apply(n1_func)
+
+#【n2】
+# def n2_func(x):
+#     if pd.isnull(x):
+#         return 6
+#     elif x > 20:
+#         return 21 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n2'] = train['n2'].apply(n2_func)
+
+#【n3】
+# def n3_func(x):
+#     if pd.isnull(x):
+#         return 6
+#     elif x > 20:
+#         return 21 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n3'] = train['n3'].apply(n3_func)
+
+#【n4】
+# def n4_func(x):
+#     if pd.isnull(x):
+#         return 5
+#     elif x > 20:
+#         return 21 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n4'] = train['n4'].apply(n4_func)
+
+
+#【n5】
+# def n5_func(x):
+#     if pd.isnull(x):
+#         return 8
+#     elif x > 30:
+#         return 31 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n5'] = train['n5'].apply(n5_func)
+
+
+#【n6】
+# def n6_func(x):
+#     if pd.isnull(x):
+#         return 9
+#     elif x > 50:
+#         return 51 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n6'] = train['n6'].apply(n6_func)
+
+
+#【n7】
+# def n7_func(x):
+#     if pd.isnull(x):
+#         return 8
+#     elif x > 30:
+#         return 31 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n7'] = train['n7'].apply(n7_func)
+
+#【n8】
+# def n8_func(x):
+#     if pd.isnull(x):
+#         return 15
+#     elif x > 55:
+#         return 56 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n8'] = train['n8'].apply(n8_func)
+
+#【n9】
+# def n9_func(x):
+#     if pd.isnull(x):
+#         return 6
+#     elif x > 25:
+#         return 26 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n9'] = train['n9'].apply(n9_func)
+
+#【n10】
+# def n10_func(x):
+#     if pd.isnull(x):
+#         return 12
+#     elif x > 40:
+#         return 41 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n10'] = train['n10'].apply(n10_func)
+
+#【n11】
+# def n11_func(x):
+#     if pd.isnull(x):
+#         return 0
+#     elif x > 1:
+#         return 1 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n11'] = train['n11'].apply(n11_func)
+
+#【n12】
+# def n12_func(x):
+#     if pd.isnull(x):
+#         return 0
+#     elif x > 1:
+#         return 1 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n12'] = train['n12'].apply(n12_func)
+
+
+#【n13】
+# def n13_func(x):
+#     if pd.isnull(x):
+#         return 0
+#     elif x > 1:
+#         return 12 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n13'] = train['n13'].apply(n13_func)
+
+#【n14】
+# def n14_func(x):
+#     if pd.isnull(x):
+#         return 2
+#     elif x > 15:
+#         return 15 #+np.random.randint(low = 1, high = 6, dtype = np.int64)
+#     else:
+#         return x
+# train['n14'] = train['n14'].apply(n14_func)

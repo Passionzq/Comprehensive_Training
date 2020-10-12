@@ -6,3 +6,4 @@
 ## Reports
 - [Week 1](./Reports/Week1.md)
 - [Week 2](./Reports/Week2.md)
+- [Week 3](./Reports/Week3.md)

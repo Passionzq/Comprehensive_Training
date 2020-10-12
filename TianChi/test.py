@@ -157,7 +157,8 @@ def cv_model(clf, train_x, train_y, test_x, clf_name):
                 'verbose': -1,
             }
 
-            model = clf.train(params, train_matrix, 50000, valid_sets=[train_matrix, valid_matrix], verbose_eval=200,early_stopping_rounds=200)
+            model = clf.train(params, train_matrix, 50000, valid_sets=[train_matrix, valid_matrix], 
+            verbose_eval=200,early_stopping_rounds=200)
             val_pred = model.predict(val_x, num_iteration=model.best_iteration)
             test_pred = model.predict(test_x, num_iteration=model.best_iteration)
             
@@ -192,8 +193,16 @@ def cv_model(clf, train_x, train_y, test_x, clf_name):
             test_pred = model.predict(test_matrix , ntree_limit=model.best_ntree_limit)
                  
         if clf_name == "cat":
-            params = {'learning_rate': 0.05, 'depth': 5, 'l2_leaf_reg': 10, 'bootstrap_type': 'Bernoulli',
-                      'od_type': 'Iter', 'od_wait': 50, 'random_seed': 11, 'allow_writing_files': False}
+            params = {
+                    'learning_rate': 0.05, 
+                    'depth': 5, 
+                    'l2_leaf_reg': 10, 
+                    'bootstrap_type': 'Bernoulli',
+                    'od_type': 'Iter', 
+                    'od_wait': 50, 
+                    'random_seed': 11, 
+                    'allow_writing_files': False
+                    }
             
             model = clf(iterations=20000, **params)
             model.fit(trn_x, trn_y, eval_set=(val_x, val_y),

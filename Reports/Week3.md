@@ -1,4 +1,4 @@
-# Week2 Report
+# Week3 Report
 
 ## 一、理论学习
 学习并实践TA上课时所给的课件，以及在对天池学习赛的数据进行处理过程中使用搜索引擎掌握了一些方法。然后也看到了Datawhale给出了一些[官方讲解视频](https://github.com/datawhalechina/team-learning-data-mining/tree/master/FinancialRiskControl)，打算接下来去学习一下。

@@ -341,9 +341,8 @@ lgb_train, lgb_test = lgb_model(x_train, y_train, x_test)
 
 xgb_train, xgb_test = xgb_model(x_train, y_train, x_test) 
 
-# cat_train, cat_test = cat_model(x_train, y_train, x_test)
+cat_train, cat_test = cat_model(x_train, y_train, x_test)
 
-rh_test = lgb_test*0.5 + xgb_test*0.5
+rh_test = lgb_test * 0.34 + xgb_test * 0.33 + cat_test * 0.33
 testA['isDefault'] = rh_test
 testA[['id','isDefault']].to_csv('output.csv', index=False)
-

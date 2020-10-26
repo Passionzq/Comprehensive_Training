@@ -1,5 +1,6 @@
-
 # Week5 Report
+
+> 注：因Github提供的Markdown预览中不支持Latex语法，因此推荐阅读[PDF版本](./Week5.pdf)。
 
 ## 一、理论学习
 借助TA使用的课件以及相关博客学习了关于“特征选择”的理论以及方法。

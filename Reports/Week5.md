@@ -75,5 +75,23 @@ Wrapper这里指不断地使用不同的特征组合来测试学习算法进行�
 
 
 ## 二、具体实践
+### （一）Pearson相关系数
+对数据集进行预处理后，排除一些显然无用的属性（'id'、'isDefault'、'grade'、'postCode'、'ficoRangeHigh'）以及类型为浮点型的属性（'interestRate','installment','dti'、'pubRecBankruptcies','revolUtil'）然后使用`DataFrame.corr(method='pearson')['isDefault'] `得到其他属性与'isDefault'属性的Pearson相关系数，并且将其进行降序排序得到下表：
+![Pearson相关系数](./images/week5/pearson_data.png)
+**将上表中绝对值大于$5*10^-3$的属性作为选择的特征，以及在上述步骤中因为是浮点数而被舍弃但现实中有明显相关的属性**丢进去进行训练，得到以下结果：
+![](./images/week5/score1.png)
 
-## 三、天池成绩
+### （二）L1正则化 /Lasso
+步骤同上，使用`sklearn.linear_model.Lasso.fit(x,y)`得到下表：
+![Lasso](./images/week5/lasso_data.png)
+对于上图中黄色标注的值非零的属性，以及其他现实中明显相关的属性一起进行训练，得到以下结果：
+![](./images/week5/score2.png)
+
+### （三）随机森林之mean decrease impurity
+步骤同上，使用`sklearn.ensemble.RandomForestRegressor.fit(x,y)`得到的结果如下图：
+![随机森林](./images/week5/RandomForestRegressor_data.png)
+对于上图中**值大于0.02的属性**以及其他现实中明显相关的属性一起进行训练，得到以下结果：
+![](./images/week5/score3.png)
+
+## 三、总结反思
+大概是因为相关参数没有设置好，亦或者太过“偏信于”一个函数所得到的数值而原始数据进行选择，所以得到的结果并不理想，反而比全部属性扔进去训练得到的结果都要差一截...应该需要采用多种方法进行加权处理来进行最终的特征选择。

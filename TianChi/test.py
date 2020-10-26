@@ -17,15 +17,12 @@ import warnings
 from scipy.stats import norm
 import seaborn as sns
 from scipy import stats 
+import random
 warnings.filterwarnings('ignore')
 
 #--------------------------数据读取--------------------------
 train = pd.read_csv('train.csv')
 testA = pd.read_csv('testA.csv')
-
-# 调用read_csv()读取文件时时会自动识别表头（默认读取第一行，即header=0)，数据有表头时不能设置header为空；
-train.head()
-
 
 # --------------------------数据预处理--------------------------
 # 将testA拼接到train的末端
@@ -44,9 +41,10 @@ data['interestRate'] = np.log1p(data['interestRate'])
 # [5]installment：无NAN值，数据呈偏态分布，使用sqrt变换使其接近于高斯分布
 data['installment'] = np.sqrt(data['installment'])
 
-# [6,7]grade属性是subGrade的前缀，故删除前者保留后者
+# [6,7]grade属性是subGrade的前缀，故只需要保留后者，因为其是离散的数值，且无实际意义，因此采用one-hot编码
 
 # [8]employmentTitle：呈现出一种极为“偏激”的分布，不作处理
+data['employmentTitle'] = data['employmentTitle'].apply(lambda x: 1 if pd.isnull(x) else x)
 
 # [9]employmentLength：去掉“years”后，”< 1”转换成“0”，"10+"转换成"10"，将NAN值转换成加权平均数“6”
 def employmentLength_to_int(s): 
@@ -123,6 +121,9 @@ data['earliesCreditLine'] = data['earliesCreditLine'].apply(lambda s: int(s[-4:]
 
 # [32]policyCode：全是1、无意义，舍弃
 
+# [33]n0：将NAN值分配到加权平均数0.5（随机数决定0或1）
+data['n0'] = data['n0'].apply(lambda x: random.randint(0,1) if pd.isnull(x) else x)
+
 # [33]n1：将NAN值分配到加权平均数3
 data['n1'] = data['n1'].apply(lambda x: 3 if pd.isnull(x) else x)
 
@@ -167,21 +168,23 @@ data['n14'] = data['n14'].apply(lambda x: 2 if pd.isnull(x) else x)
 
 
 # 部分类别特征
-cate_features = ['subGrade', 'employmentTitle', 'homeOwnership', 'verificationStatus', 'purpose', 'postCode', 'regionCode', \
-                 'applicationType', 'initialListStatus', 'title']
+# cate_features = ['subGrade', 'employmentTitle', 'homeOwnership', 'verificationStatus', 'purpose', 'postCode', 'regionCode', \
+#                  'applicationType', 'initialListStatus', 'title']
 
 # （可删除）nunique():用于获取唯一值的统计次数。
-for f in cate_features:
-    print(f, '类型数：', data[f].nunique())
+# for f in cate_features:
+#     print(f, '类型数：', data[f].nunique())
 
 # 类型数在2之上，又不是高维稀疏的，需要使用get_dummies实现one hot encode
 # 也即：就是添加原来数据中没有的变量，但是这并不是意味着可以随意添加，应该是根据原来的数据进行转换。
 # 例如：将一个变量Embarked，根据它的值（C、Q、S）转换为Embarked_C、Embarked_Q、Embarked_S三个变量
 # (转化后有默认名，也可以利用参数prefix来自己修改）
-data = pd.get_dummies(data, columns=['subGrade', 'homeOwnership', 'verificationStatus', 'purpose', 'regionCode'], drop_first=True)
+# data = pd.get_dummies(data, columns=['subGrade', 'homeOwnership', 'verificationStatus'], drop_first=True)
+data = pd.get_dummies(data, columns=['subGrade'], drop_first=True)
 
 # 高维类别特征需要进行转换
-for f in ['employmentTitle', 'postCode', 'title']:
+# for f in ['employmentTitle', 'postCode', 'title']:
+for f in ['employmentTitle',  'title']:
     # 这个操作的目的是将数据按照${f}进行分组（因为将train表和testA表合并了）
     # 然后统计每组的个数（count），并且新增一列'f_cnts'的属性，其值为相应的count
     # tips：此操作并未将该列属性增加到csv表格中，如果需要则应使用set_index()
@@ -195,7 +198,14 @@ for f in ['employmentTitle', 'postCode', 'title']:
     del data[f]
 
 
-features = [f for f in data.columns if f not in ['id','grade','ficoRangeHigh','isDefault','policyCode']]
+features = [f for f in data.columns if f not in [
+                                                'id','grade','ficoRangeHigh','isDefault','policyCode',\
+                                                'homeOwnership','verificationStatus',\
+                                                'purpose','delinquency_2years',\
+                                                'pubRec','initialListStatus','applicationType',\
+                                                'n0','n2','n3','n9','n11','n12','n13'
+                                                ]]
+
 
 # 训练组为属性isDefault有明确值的数据，测试组则与之相反
 train = data[data.isDefault.notnull()].reset_index(drop=True)
@@ -345,4 +355,8 @@ cat_train, cat_test = cat_model(x_train, y_train, x_test)
 
 rh_test = lgb_test * 0.34 + xgb_test * 0.33 + cat_test * 0.33
 testA['isDefault'] = rh_test
-testA[['id','isDefault']].to_csv('output.csv', index=False)
+testA[['id','isDefault']].to_csv('output1.csv', index=False)
+
+rh_test = lgb_test * 0.5 + xgb_test * 0.5
+testA['isDefault'] = rh_test
+testA[['id','isDefault']].to_csv('output2.csv', index=False)

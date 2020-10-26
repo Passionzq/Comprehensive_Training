@@ -43,6 +43,7 @@ testA = pd.read_csv('testA.csv')
 # 【earliesCreditLine】直接扔进去训练
 # 【title】直接扔进去训练
 # 【policyCode】全是1、无意义，舍弃
+# 【n0】
 # 【n1】将NAN值分配到加权平均数3
 # 【n2】将NAN值分配到加权平均数6
 # 【n3】将NAN值分配到加权平均数6

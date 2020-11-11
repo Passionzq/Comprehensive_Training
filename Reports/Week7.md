@@ -55,5 +55,5 @@ LightGBM 利用基于 histogram 的算法（而非像XGBoost默认对于决策�
 
 ## 三、成绩
 1. 本周：
-
-2. 最佳：
+![Score](./images/week7/6.png)
+2. 最佳：0.7313

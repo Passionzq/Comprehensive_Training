@@ -179,12 +179,10 @@ data['n14'] = data['n14'].apply(lambda x: 2 if pd.isnull(x) else x)
 # 也即：就是添加原来数据中没有的变量，但是这并不是意味着可以随意添加，应该是根据原来的数据进行转换。
 # 例如：将一个变量Embarked，根据它的值（C、Q、S）转换为Embarked_C、Embarked_Q、Embarked_S三个变量
 # (转化后有默认名，也可以利用参数prefix来自己修改）
-# data = pd.get_dummies(data, columns=['subGrade', 'homeOwnership', 'verificationStatus'], drop_first=True)
-data = pd.get_dummies(data, columns=['subGrade'], drop_first=True)
+data = pd.get_dummies(data, columns=['subGrade', 'homeOwnership', 'verificationStatus'], drop_first=True)
 
 # 高维类别特征需要进行转换
-# for f in ['employmentTitle', 'postCode', 'title']:
-for f in ['employmentTitle',  'title']:
+for f in ['employmentTitle', 'postCode', 'title']:
     # 这个操作的目的是将数据按照${f}进行分组（因为将train表和testA表合并了）
     # 然后统计每组的个数（count），并且新增一列'f_cnts'的属性，其值为相应的count
     # tips：此操作并未将该列属性增加到csv表格中，如果需要则应使用set_index()
@@ -198,13 +196,7 @@ for f in ['employmentTitle',  'title']:
     del data[f]
 
 
-features = [f for f in data.columns if f not in [
-                                                'id','grade','ficoRangeHigh','isDefault','policyCode',\
-                                                'homeOwnership','verificationStatus',\
-                                                'purpose','delinquency_2years',\
-                                                'pubRec','initialListStatus','applicationType',\
-                                                'n0','n2','n3','n9','n11','n12','n13'
-                                                ]]
+features = [f for f in data.columns if f not in ['id','grade','ficoRangeHigh','isDefault','policyCode']]
 
 
 # 训练组为属性isDefault有明确值的数据，测试组则与之相反
@@ -257,11 +249,16 @@ def cv_model(clf, train_x, train_y, test_x, clf_name):
                 'objective': 'binary',  # 逻辑回归二分类，输出概率
                 'metric': 'auc',    # 度量指标AUC：Area Under the Curve 
                 'min_child_weight': 5,  #使一个结点分裂的最小海森值之和，较高的值可能会减少过度拟合
-                'num_leaves': 2 ** 5,   # 树的最大叶子节点数
-                'lambda_l2': 10,    # 越小l2正则程度越高 
+                'max_bin': 255,
+                'min_data_in_leaf': 81,
+                'min_split_gain': 0.1,
+                'max_depth': 4,
+                'num_leaves': 10,   # 树的最大叶子节点数
+                'lambda_l1': 0.1,
+                'lambda_l2': 0,    # 越小l2正则程度越高 
                 'feature_fraction': 0.8, # 建树时随机抽取特征的比例，默认为1
-                'bagging_fraction': 0.8, # 建树时样本采样比例，默认为1
-                'bagging_freq': 4,  #bagging的频率
+                'bagging_fraction': 0.7, # 建树时样本采样比例，默认为1
+                'bagging_freq': 30,  #bagging的频率
                 'learning_rate': 0.1, #学习率
                 'seed': 2020,   #随机数种子
                 'nthread': 28,
@@ -285,9 +282,9 @@ def cv_model(clf, train_x, train_y, test_x, clf_name):
             params = {'booster': 'gbtree',
                       'objective': 'binary:logistic',
                       'eval_metric': 'auc',
-                      'gamma': 1,
-                      'min_child_weight': 1.5,
-                      'max_depth': 5,
+                      'gamma': 0.1,
+                      'min_child_weight': 5,
+                      'max_depth': 4,
                       'lambda': 10,
                       'subsample': 0.7,
                       'colsample_bytree': 0.7,
@@ -296,6 +293,8 @@ def cv_model(clf, train_x, train_y, test_x, clf_name):
                       'tree_method': 'exact',
                       'seed': 2020,
                       'nthread': 36,
+                      'reg_alpha':1,
+                      'reg_lambda':1,
                       "silent": True,
                       }
             

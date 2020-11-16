@@ -11,3 +11,4 @@
 - [Week 5](./Reports/Week5.md)
 - [Week 6](./Reports/Week6.md)
 - [Week 7](./Reports/Week7.md)
+- [Week 8](./Reports/Week8.md)

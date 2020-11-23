@@ -12,3 +12,5 @@
 - [Week 6](./Reports/Week6.md)
 - [Week 7](./Reports/Week7.md)
 - [Week 8](./Reports/Week8.md)
+- [Final](./Reports/实训期末展示.pptx)
+

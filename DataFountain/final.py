@@ -401,7 +401,7 @@ clf=cab.CatBoostClassifier(iterations=80 #60
                               ,cat_features=cat_features
                               )
 
-rf = RandomForestClassifier(oob_score=True, random_state=2020,
+rf = (oob_score=True, random_state=2020,
             n_estimators= 100,max_depth=13,min_samples_split=5) #70, 13, 5
 k_fold_serachParmaters(rf,train_data,kind)
 print('xlf:',k_fold_serachParmaters(xlf,train_data,kind))
